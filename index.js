@@ -20,7 +20,7 @@ var usernameHandler = require('./handlers/usernameHandler.js');
 //io.set("heartbeat timeout", 3*60*1000);
 
 //set which port this app runs on
-var port = 4321;
+var port = 80;
 
 
 var totalUsers = 0;
@@ -48,7 +48,7 @@ app.use(function (req, res, next) {
     next();
 });
 
-// serve the client folder 
+// serve the client folder
 app.use(express.static(__dirname + '/../client'));
 
 
@@ -69,7 +69,7 @@ io.on('connection', function (socket) {
     socketHandler.socketConnected(socket);
 
     adminHandler.log("socket.ip: " + socket.remoteAddress);
-    
+
 
     // once the new user is connected, we ask him to tell us his name
     // tell him how many people online now
@@ -87,7 +87,7 @@ io.on('connection', function (socket) {
         var newUser = false;
 
         newUser = socketHandler.socketJoin(socket, data.url, data.referrer, data.uuid, data.username);
-            
+
         var roomID = roomHandler.socketJoin(socket, data.roomID);
 
         var user = socket.user;
@@ -97,7 +97,7 @@ io.on('connection', function (socket) {
 
             // ensure username unique in same chat room
             usernameHandler.registerUniqueName(user, user.username);
-            
+
 
             //TODO: if the username distributed to user from server is different from the client one
             // we need to tell the client to update local name
@@ -106,7 +106,7 @@ io.on('connection', function (socket) {
             socket.emit('welcome new user', {
                 username: user.username,
                 // numUsers: socketHandler.getUserCount() // this should be user count in same room
-                onlineUsers: usernameHandler.getNamesInRoom(roomID) 
+                onlineUsers: usernameHandler.getNamesInRoom(roomID)
             });
 
             // echo to others that a new user just joined
@@ -137,7 +137,7 @@ io.on('connection', function (socket) {
 
     // when the socket disconnects
     socket.on('disconnect', function () {
-        
+
         var lastConnectionOfUser = socketHandler.socketDisconnected(socket);
 
         // the user only exist after login
@@ -169,7 +169,7 @@ io.on('connection', function (socket) {
         var user = socket.user;
         var oldName = user.username;
 
-        if (oldName === data.newName) 
+        if (oldName === data.newName)
             return;
 
         usernameHandler.userEditName(socket, data.newName);
@@ -230,7 +230,7 @@ io.on('connection', function (socket) {
 
     // when the client emits 'stop typing', we broadcast it to others
     socket.on('stop typing', function (data) {
-    
+
         io.in(socket.user.roomID).emit('stop typing', { username: socket.user.username });
 
     });
@@ -239,9 +239,9 @@ io.on('connection', function (socket) {
     socket.on('reset2origintitle', function (data) {
         if (!socket.joined) return;
         var socketsToResetTitle = socket.user.socketIDList;
-        for (var i = 0; i< socketsToResetTitle.length; i++) 
+        for (var i = 0; i< socketsToResetTitle.length; i++)
             socketHandler.getSocket(socketsToResetTitle[i]).emit('reset2origintitle', {});
-        
+
     });
 
 
@@ -262,7 +262,7 @@ io.on('connection', function (socket) {
     socket.on('getServerStat', function (data) {
 
         adminHandler.getServerStat(socket, data.token);
-        
+
     });
 
     // send script to target users
