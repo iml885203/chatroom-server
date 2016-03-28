@@ -20,7 +20,7 @@ var usernameHandler = require('./handlers/usernameHandler.js');
 //io.set("heartbeat timeout", 3*60*1000);
 
 //set which port this app runs on
-var port = 80;
+var port = 8080;
 
 
 var totalUsers = 0;
